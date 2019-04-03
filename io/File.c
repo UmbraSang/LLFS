@@ -1,4 +1,4 @@
-#include <C:\Users\Pando\Desktop\SchoolWork\CSC360-FileSystemProject\disk\diskLib.c>
+#include "..\disk\diskLib.c"
 #include <unistd.h>
 #include <math.h>
 const int INODE_SIZE = 32;
