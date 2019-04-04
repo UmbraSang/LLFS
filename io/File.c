@@ -105,6 +105,24 @@ struct iNode* makeInode(short inodeID, int fileSize, int flags, short addyArr[],
     return inode;
 }
 
+void writeInode(FILE* disk, int nodeLocation, struct iNode currNode){
+    fseek(disk, nodeLocation, SEEK_SET);
+    fwrite(currNode->inodeID, 2, 1, disk);
+    fseek(disk, nodeLocation+2, SEEK_SET);
+    fwrite(currNode->fileSize, 4, 1, disk);
+    fseek(disk, nodeLocation+6, SEEK_SET);
+    fwrite(currNode->flags, 4, 1, disk);
+    fseek(disk, nodeLocation+10, SEEK_SET);
+    fwrite(currNode->addyArr, 20, 1, disk);
+    fseek(disk, nodeLocation+30, SEEK_SET);
+    fwrite(currNode->inodeID, 2, 1, disk);
+
+    int* numNode = malloc(4);
+    fseek(disk, 0+6, SEEK_SET);
+    fread(numNode, 4, 1, disk);
+    fwrite(numNode+1, 4, 1, disk);
+}
+
 void InitLLFS(){
     if(access("vdisk", F_OK) != -1){
         if (remove("vdisk") == 0){
