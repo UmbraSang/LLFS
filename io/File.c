@@ -185,8 +185,8 @@ void markVectorBlocks(int diskHead, int numBits, int isSetting){
 short getNewInodeID(){
      int* inodeID = malloc(4);
      getNumInodes(disk, inodeID);
-     short temp = &inodeID
-     return temp;
+     int temp = &inodeID;
+     return (short)temp;
  }
 
  void writeDataToDisk(FILE* disk, char* inputData, int isDir){
@@ -228,6 +228,10 @@ short getNewInodeID(){
 
     //free(currNode); //TODO: fix this
  }
+ 
+ int getInodeFromMap(short inodeID){
+     //TODO: search for inode in map
+ }
 
  struct iNode* getInodeByID(short inodeID){
     //TODO: check inodeMap for ID and read the data to make an inode
@@ -242,7 +246,7 @@ short getNewInodeID(){
      readInode(disk, inodeLocation, addyArrBuff, 20, 10);
      short* indir1Buff = malloc(2);
      readInode(disk, inodeLocation, indir1Buff, 2, 30);
-     struct iNode* readNode = makeInode((short*)idBuff, (int*)sizeBuff, (int*)flagBuff, addyArrBuff, (short*)indir1Buff);
+     struct iNode* readNode = makeInode((short)idBuff, (int)sizeBuff, (int)flagBuff, addyArrBuff, (short)indir1Buff);
      return readNode;
  }
 
@@ -261,9 +265,6 @@ short getNewInodeID(){
      //TODO: checks and returns where the disk Head is.
  }
 
- int getInodeFromMap(short inodeID){
-     //TODO: search for inode in map
- }
 
 
 
