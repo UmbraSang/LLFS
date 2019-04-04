@@ -86,7 +86,7 @@ typedef struct iNode{
     short inodeID; //2 byte
     int fileSize; //4 byte
     int flags; //4 byte
-    short addyArr[10]; //20 byte
+    short* addyArr; //20 byte
     short indir1; //2 byte
 }inode_t;
 
@@ -107,15 +107,15 @@ struct iNode* makeInode(short inodeID, int fileSize, int flags, short* addyArr, 
 
 void writeInode(FILE* disk, int nodeLocation, struct iNode* currNode){
     fseek(disk, nodeLocation, SEEK_SET);
-    fwrite(currNode->inodeID, 2, 1, disk);
+    fwrite(&currNode->inodeID, 2, 1, disk);
     fseek(disk, nodeLocation+2, SEEK_SET);
-    fwrite(currNode->fileSize, 4, 1, disk);
+    fwrite(&currNode->fileSize, 4, 1, disk);
     fseek(disk, nodeLocation+6, SEEK_SET);
-    fwrite(currNode->flags, 4, 1, disk);
+    fwrite(&currNode->flags, 4, 1, disk);
     fseek(disk, nodeLocation+10, SEEK_SET);
-    fwrite(currNode->addyArr, 20, 1, disk);
+    fwrite(&currNode->addyArr, 20, 1, disk);
     fseek(disk, nodeLocation+30, SEEK_SET);
-    fwrite(currNode->indir1, 2, 1, disk);
+    fwrite(&currNode->indir1, 2, 1, disk);
 
     int* numNode = malloc(4);
     fseek(disk, 0+6, SEEK_SET);
