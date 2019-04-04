@@ -100,7 +100,7 @@ struct iNode* makeInode(short inodeID, int fileSize, int flags, short addyArr[],
     inode->inodeID = inodeID; 
     inode->fileSize = fileSize; 
     inode->flags = flags; //TODO: filetype
-    inode->addyArr = addyArr; 
+    inode->addyArr = (*addyArr); 
     inode->indir1 = indir1; //TODO: method to find file blocks if file too big
     return inode;
 }
