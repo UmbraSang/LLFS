@@ -105,7 +105,7 @@ struct iNode* makeInode(short inodeID, int fileSize, int flags, short* addyArr, 
     return inode;
 }
 
-void writeInode(FILE* disk, int nodeLocation, struct iNode currNode){
+void writeInode(FILE* disk, int nodeLocation, struct iNode* currNode){
     fseek(disk, nodeLocation, SEEK_SET);
     fwrite(currNode->inodeID, 2, 1, disk);
     fseek(disk, nodeLocation+2, SEEK_SET);
@@ -115,7 +115,7 @@ void writeInode(FILE* disk, int nodeLocation, struct iNode currNode){
     fseek(disk, nodeLocation+10, SEEK_SET);
     fwrite(currNode->addyArr, 20, 1, disk);
     fseek(disk, nodeLocation+30, SEEK_SET);
-    fwrite(currNode->inodeID, 2, 1, disk);
+    fwrite(currNode->indir1, 2, 1, disk);
 
     int* numNode = malloc(4);
     fseek(disk, 0+6, SEEK_SET);
@@ -185,7 +185,8 @@ void markVectorBlocks(int diskHead, int numBits, int isSetting){
 short getNewInodeID(){
      int* inodeID = malloc(4);
      getNumInodes(disk, inodeID);
-     return (short)inodeID;
+     short temp = &inodeID
+     return temp;
  }
 
  void writeDataToDisk(FILE* disk, char* inputData, int isDir){
@@ -228,21 +229,6 @@ short getNewInodeID(){
     //free(currNode); //TODO: fix this
  }
 
- char* readDataFromDisk(FILE* disk, short inodeID){
-     struct iNode* readNode = getInodeByID(inodeID);
-     char* buffer = (char*)malloc(readNod->fileSize); //TODO: does this need to be in a multiple of BLOCK_SIZE?
-     int i;
-     int blocksUsed = ceil(readNode->fileSize/BLOCK_SIZE);
-     for(i=0; i<blocksUsed; i++){
-         readBlock(disk, readNode->addyArr[i], &buffer[i*BLOCK_SIZE]);
-     }
-     return buffer;
- } //TODO: doesn't account for indirect yet.
-
- int findDiskHead(){
-     //TODO: checks and returns where the disk Head is.
- }
-
  struct iNode* getInodeByID(short inodeID){
     //TODO: check inodeMap for ID and read the data to make an inode
      int inodeLocation = getInodeFromMap();
@@ -255,9 +241,24 @@ short getNewInodeID(){
      short* addyArrBuff = malloc(2*10);
      readInode(disk, inodeLocation, addyArrBuff, 20, 10);
      short* indir1Buff = malloc(2);
-     readInode(disk, inodeLocation, indir1, 2, 30);
+     readInode(disk, inodeLocation, indir1Buff, 2, 30);
      struct iNode* readNode = makeInode((short*)idBuff, (int*)sizeBuff, (int*)flagBuff, addyArrBuff, (short*)indir1Buff);
      return readNode;
+ }
+
+ char* readDataFromDisk(FILE* disk, short inodeID){
+     struct iNode* readNode = getInodeByID(inodeID);
+     char* buffer = (char*)malloc(readNode->fileSize); //TODO: does this need to be in a multiple of BLOCK_SIZE?
+     int i;
+     int blocksUsed = ceil(readNode->fileSize/BLOCK_SIZE);
+     for(i=0; i<blocksUsed; i++){
+         readBlock(disk, readNode->addyArr[i], &buffer[i*BLOCK_SIZE]);
+     }
+     return buffer;
+ } //TODO: doesn't account for indirect yet.
+
+ int findDiskHead(){
+     //TODO: checks and returns where the disk Head is.
  }
 
  int getInodeFromMap(short inodeID){
