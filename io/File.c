@@ -2,9 +2,8 @@
 #include <unistd.h>
 #include <math.h>
 const int INODE_SIZE = 32;
-const int BLOCK_SIZE = 512;
 FILE* disk;
-// int inodeID = 0; -just store inode count in disk/inodemap.size?
+char vectorArr[128];
 
 /*
 Question:
@@ -94,9 +93,9 @@ typedef struct iNode{
 typedef struct iMap{
     int mapSize;
     short mapping[252];
-}
+};
 
-struct iNode* makeInode(short inodeID, int fileSize, int flags, short addyArr[], short indir1) {
+struct iNode* makeInode(short inodeID, int fileSize, int flags, short addyArr[], short indir1) { //TODO: incompatible types?? short int*??
     struct iNode* inode = malloc(32);
     inode->inodeID = inodeID; //TODO: method for counting inodes
     inode->fileSize = fileSize; //TODO: method for finding filesize
@@ -123,28 +122,85 @@ void InitLLFS(){
  }
 
  void initStartingBlocks(){
-     char* superBlock; //TODO: not char*?
-     writeBlock(disk, 0, ""); //SuperBlock
-     writeBlock(disk, 1, ""); //TODO: free block vector
-     writeBlock(disk, 2, ""); //TODO: imap
-     writeBlock(disk, 3, "0");//TODO: imap
+    int superBlock[3] = {3, 4096, 0} //TODO: not char*?
+    writeBlock(disk, 0, superBlock);
+    int i;
+    int vectorArr[128];
+    for(i=0; i<128; i++){
+        vectorArr[i]=0xff;
+    }
  }
 
+ int isBitClear(int blocknum){
+    char byte = vectorArr[blocknum/8];
+    int mask = 1;
+    mask = mask<<(blocknum%8);
+    return byte & mask;
+ }
+
+ void setbit(int blocknum){
+    char byte = vectorArr[blocknum/8];
+    int mask = 1;
+    mask = mask<<(blocknum%8);
+    vectorArr[blocknum/8] = byte | mask;
+}
+
+void clearbit(int blocknum){
+    char byte = vectorArr[blocknum/8];
+    int mask = 254;
+    mask = mask<<(blocknum%8);
+    vectorArr[blocknum/8] = byte & mask;
+}
+
+void markVectorBlocks(int diskHead, int numBits, int isSetting){
+    int i;
+    for(i=0; i<numBits; i++){
+        if(isSet){
+            setbit(diskHead+i);
+        }else{
+            clearbit(diskHead+i);
+        }
+    }
+    //TODO: overwrite vector block with vectorArr[]
+}
+
  void writeDataToDisk(FILE* disk, char* inputData, int isDir){
+    int totalInodes = getNumInodes();
+    int inodeMapBlock;
+    if(totalInodes>256){
+        printf("File System at capacity. No space in inodeMap.\n");
+        return;
+    }else if(totalInodes>128){
+        inodeMapBlock = 3;
+    }else{
+        inodeMapBlock = 2;
+    }
+
+    //writes data
     int i;
     int blocksNeeded = ceil(strlen(inputData)/BLOCK_SIZE);
     int diskHead = findDiskHead();
+    char* pointToIndex;
     for(i=0; i<blocksNeeded; i++){
-        writeBlock(disk, diskHead, inputData[i*BLOCK_SIZE]);
-    }
+        writeBlock(disk, diskHead+i, &inputData[i*BLOCK_SIZE]);
+    } //TODO: fix indirect blocking
+
+    //writes inode
+    markVectorBlocks(diskHead, i+1, 0);
     short addyArr[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     for(i=0; i<blocksNeeded; i++){
         addyArr[i]=diskHead+i;
     }
-    struct iNode currNode = makeInode(getNewInodeID(), strlen(inputData), isDir, addyArr, 0);
-    //TODO: fix indirect blocking
-    writeBlock(disk, findDiskHead(), currNode);
-    free(currNode);
+    struct iNode* currNode = makeInode(getNewInodeID(), strlen(inputData), isDir, addyArr, 0);
+    diskHead = findDiskHead();
+    writeInode(disk, diskHead, currNode);
+
+    //writes inode to map
+    updateImap(disk, inodeMapBlock, totalInodes%127, currNode->inodeID, diskHead);
+
+
+
+    //free(currNode); //TODO: fix this
  }
 
  char* readDataFromDisk(FILE* disk, short inodeID){
@@ -163,7 +219,9 @@ void InitLLFS(){
  }
 
  short getNewInodeID(){
-     //TODO: find next inodeID from inodeMap
+     int* inodeID = malloc(4);
+     getNumInodes(disk, inodeID);
+     return (short)inodeID;
  }
 
  struct iNode getInodeByID(short inodeID){
@@ -187,13 +245,7 @@ void InitLLFS(){
      //TODO: search for inode in map
  }
 
-//  struct iNode{
-//     short inodeID; //2 byte
-//     int fileSize; //4 byte
-//     int flags; //4 byte
-//     short addyArr[10]; //20 byte
-//     short indir1; //2 byte
-// };
+
 
  /*
  Inode points to file blocks

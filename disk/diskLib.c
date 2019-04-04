@@ -4,19 +4,50 @@
 const int BLOCK_SIZE = 512;
 const int NUM_BLOCKS = 4096;
 
-void writeBlock(FILE* disk, int blockNum, char* data){
+void writeBlock(FILE* disk, int blockNum, void* data){
     fseek(disk, blockNum * BLOCK_SIZE, SEEK_SET);
     fwrite(data, BLOCK_SIZE, 1, disk); 
 }
 
-void readBlock(FILE* disk, int blockNum, char* buffer){
+void readBlock(FILE* disk, int blockNum, void* buffer){
     fseek(disk, blockNum * BLOCK_SIZE, SEEK_SET);
     fread(buffer, BLOCK_SIZE, 1, disk);
+}
+
+void writeInode(FILE* disk, int nodeLocation, struct iNode* currNode){
+    fseek(disk, nodeLocation, SEEK_SET);
+    fwrite(currNode->inodeID, 2, 1, disk);
+    fseek(disk, nodeLocation+2, SEEK_SET);
+    fwrite(currNode->fileSize, 4, 1, disk);
+    fseek(disk, nodeLocation+6, SEEK_SET);
+    fwrite(currNode->flags, 4, 1, disk);
+    fseek(disk, nodeLocation+10, SEEK_SET);
+    fwrite(currNode->addyArr, 20, 1, disk);
+    fseek(disk, nodeLocation+30, SEEK_SET);
+    fwrite(currNode->inodeID, 2, 1, disk);
+
+    int* numNode = malloc(4);
+    fseek(disk, 0+6, SEEK_SET);
+    fread(numNode, 4, 1, disk);
+    fwrite(numNode+1, 4, 1, disk);
+}
+
+void getNumInodes(FILE* disk, int* numNodes){
+    fseek(disk, 0+6, SEEK_SET);
+    fread(numNodes, 4, 1, disk);
 }
 
 void readInode(FILE* disk, int blockNum, void* buffer, int size, int offset){
     fseek(disk, (blockNum * BLOCK_SIZE)+offset, SEEK_SET);
     fread(buffer, size, 1, disk);
+}
+
+void updateImap(FILE* disk, int mapBlock, int blockInodes, short inodeID, short inodeAddy){
+    int location = mapBlock*BLOCK_SIZE+blockInodes*4;
+    fseek(disk, location, SEEK_SET);
+    fwrite(inodeID, 2, 1, disk);
+    fseek(disk, location+2, SEEK_SET);
+    fwrite(inodeAddy, 2, 1, disk);
 }
 
 void initDisk(){}
