@@ -88,19 +88,19 @@ typedef struct iNode{
     int flags; //4 byte
     short addyArr[10]; //20 byte
     short indir1; //2 byte
-};
+}inode_t;
 
 typedef struct iMap{
     int mapSize;
     short mapping[252];
-};
+}imap_t;
 
 struct iNode* makeInode(short inodeID, int fileSize, int flags, short addyArr[], short indir1) { //TODO: incompatible types?? short int*??
     struct iNode* inode = malloc(32);
-    inode->inodeID = inodeID; //TODO: method for counting inodes
-    inode->fileSize = fileSize; //TODO: method for finding filesize
+    inode->inodeID = inodeID; 
+    inode->fileSize = fileSize; 
     inode->flags = flags; //TODO: filetype
-    inode->addyArr = addyArr; //TODO: method for file blocks
+    inode->addyArr = addyArr; 
     inode->indir1 = indir1; //TODO: method to find file blocks if file too big
     return inode;
 }
@@ -122,7 +122,7 @@ void InitLLFS(){
  }
 
  void initStartingBlocks(){
-    int superBlock[3] = {3, 4096, 0} //TODO: not char*?
+    int superBlock[3] = {3, 4096, 0}; //TODO: not char*?
     writeBlock(disk, 0, superBlock);
     int i;
     int vectorArr[128];
@@ -155,7 +155,7 @@ void clearbit(int blocknum){
 void markVectorBlocks(int diskHead, int numBits, int isSetting){
     int i;
     for(i=0; i<numBits; i++){
-        if(isSet){
+        if(isSetting){
             setbit(diskHead+i);
         }else{
             clearbit(diskHead+i);
@@ -164,8 +164,15 @@ void markVectorBlocks(int diskHead, int numBits, int isSetting){
     //TODO: overwrite vector block with vectorArr[]
 }
 
+short getNewInodeID(){
+     int* inodeID = malloc(4);
+     getNumInodes(disk, inodeID);
+     return (short)inodeID;
+ }
+
  void writeDataToDisk(FILE* disk, char* inputData, int isDir){
-    int totalInodes = getNumInodes();
+    int totalInodes;
+    getNumInodes(disk, &totalInodes);
     int inodeMapBlock;
     if(totalInodes>256){
         printf("File System at capacity. No space in inodeMap.\n");
@@ -204,12 +211,12 @@ void markVectorBlocks(int diskHead, int numBits, int isSetting){
  }
 
  char* readDataFromDisk(FILE* disk, short inodeID){
-     struct iNode readNode = getInodeByID(inodeID);
-     char* buffer = (char*)malloc(readNode->fileSize); //TODO: does this need to be in a multiple of BLOCK_SIZE?
+     struct iNode* readNode = getInodeByID(inodeID);
+     char* buffer = (char*)malloc(readNod->fileSize); //TODO: does this need to be in a multiple of BLOCK_SIZE?
      int i;
      int blocksUsed = ceil(readNode->fileSize/BLOCK_SIZE);
      for(i=0; i<blocksUsed; i++){
-         readBlock(disk, readNode->addyArr[i], buffer[i*BLOCK_SIZE]);
+         readBlock(disk, readNode->addyArr[i], &buffer[i*BLOCK_SIZE]);
      }
      return buffer;
  } //TODO: doesn't account for indirect yet.
@@ -218,13 +225,7 @@ void markVectorBlocks(int diskHead, int numBits, int isSetting){
      //TODO: checks and returns where the disk Head is.
  }
 
- short getNewInodeID(){
-     int* inodeID = malloc(4);
-     getNumInodes(disk, inodeID);
-     return (short)inodeID;
- }
-
- struct iNode getInodeByID(short inodeID){
+ struct iNode* getInodeByID(short inodeID){
     //TODO: check inodeMap for ID and read the data to make an inode
      int inodeLocation = getInodeFromMap();
      short* idBuff = malloc(2);
@@ -237,7 +238,7 @@ void markVectorBlocks(int diskHead, int numBits, int isSetting){
      readInode(disk, inodeLocation, addyArrBuff, 20, 10);
      short* indir1Buff = malloc(2);
      readInode(disk, inodeLocation, indir1, 2, 30);
-     struct iNode readNode = makeInode((short*)idBuff, (int*)sizeBuff, (int*)flagBuff, addyArrBuff, (short*)indir1Buff);
+     struct iNode* readNode = makeInode((short*)idBuff, (int*)sizeBuff, (int*)flagBuff, addyArrBuff, (short*)indir1Buff);
      return readNode;
  }
 

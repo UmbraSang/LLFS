@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../io/File.c"
 const int BLOCK_SIZE = 512;
 const int NUM_BLOCKS = 4096;
 
@@ -14,7 +15,7 @@ void readBlock(FILE* disk, int blockNum, void* buffer){
     fread(buffer, BLOCK_SIZE, 1, disk);
 }
 
-void writeInode(FILE* disk, int nodeLocation, struct iNode* currNode){
+void writeInode(FILE* disk, int nodeLocation, struct iNode currNode){
     fseek(disk, nodeLocation, SEEK_SET);
     fwrite(currNode->inodeID, 2, 1, disk);
     fseek(disk, nodeLocation+2, SEEK_SET);
@@ -45,9 +46,9 @@ void readInode(FILE* disk, int blockNum, void* buffer, int size, int offset){
 void updateImap(FILE* disk, int mapBlock, int blockInodes, short inodeID, short inodeAddy){
     int location = mapBlock*BLOCK_SIZE+blockInodes*4;
     fseek(disk, location, SEEK_SET);
-    fwrite(inodeID, 2, 1, disk);
+    fwrite(&inodeID, 2, 1, disk);
     fseek(disk, location+2, SEEK_SET);
-    fwrite(inodeAddy, 2, 1, disk);
+    fwrite(&inodeAddy, 2, 1, disk);
 }
 
 void initDisk(){}
