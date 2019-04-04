@@ -95,12 +95,12 @@ typedef struct iMap{
     short mapping[252];
 }imap_t;
 
-struct iNode* makeInode(short inodeID, int fileSize, int flags, short addyArr[], short indir1) { //TODO: incompatible types?? short int*??
+struct iNode* makeInode(short inodeID, int fileSize, int flags, short* addyArr, short indir1) { //TODO: incompatible types?? short int*??
     struct iNode* inode = malloc(32);
     inode->inodeID = inodeID; 
     inode->fileSize = fileSize; 
     inode->flags = flags; //TODO: filetype
-    inode->addyArr = (*addyArr); 
+    inode->addyArr = addyArr; 
     inode->indir1 = indir1; //TODO: method to find file blocks if file too big
     return inode;
 }
