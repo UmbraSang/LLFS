@@ -13,7 +13,7 @@ void txtReader(char* input, char* buffer){
    }
    fgets(buffer, MAX, txtFile);
    fclose(txtFile);
-   buffer[strlen(buffer)]=Null;
+   buffer[strlen(buffer)]=NULL;
 }
 
 int main(int argc, char **argv){
@@ -24,7 +24,7 @@ int main(int argc, char **argv){
     read from disk
     verify inode data
     */
-   char* inputData[MAX];
+   char inputData[MAX];
    txtReader(argv[1], inputData); //TODO: review index
    writeDataToDisk(disk, inputData, 0);
 }
