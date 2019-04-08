@@ -3,9 +3,9 @@ INC = -I/io/
 INC += -I/apps/
 OBJS = File.o test01.o test02.o
 
-all: llfs
+all: main
 
-llfs: $(OBJS)
+main: $(OBJS)
 	gcc $(CFLAGS) -o $(OBJS)
 
 File.o: io/File.c
