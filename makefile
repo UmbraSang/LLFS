@@ -1,11 +1,12 @@
-CFLAGS=-Wall -Werror
-INC=-I/io/
-INC+=-I/apps/
+CFLAGS = -Wall -Werror
+INC = -I/io/
+INC += -I/apps/
+OBJS = File.o test01.o test02.o
 
 all: llfs
 
-llfs: File.o test01.o test02.o
-	gcc $(CFLAGS) -o go File.o test01.o test02.o
+llfs: $(OBJS)
+	gcc $(CFLAGS) -o $(OBJS)
 
 File.o: io/File.c
 	cd io
