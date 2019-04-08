@@ -18,6 +18,7 @@ void txtReader(char* input, char* buffer){
 
 int main(int argc, char **argv){
     FILE* disk = InitLLFS();
+    printf("init finished\n");
     /*
     Free block checking after writing
     write to disk
@@ -26,5 +27,7 @@ int main(int argc, char **argv){
     */
    char inputData[MAX];
    txtReader(argv[1], inputData); //TODO: review index
+   printf("txtReader finished\n");
    writeDataToDisk(disk, inputData, 0);
+   printf("DataToDisk finished\n");
 }
