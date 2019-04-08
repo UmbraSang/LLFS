@@ -4,9 +4,7 @@
 const int INODE_SIZE = 32;
 FILE* disk;
 char vectorArr[128];
-
 const int iNodeBlockStart = 4;
-const int diskHeadStart = iNodeBlockStart+16; //start index of fileblocks
 
 /*
 Question:
@@ -88,12 +86,8 @@ void writeInode(FILE* disk, int nodeLocation, struct iNode* currNode){
     fwrite(numNode+1, 4, 1, disk);
 }
 
-int findDiskHead(){
-     return diskHead;
- }
-
 void initStartingBlocks(){
-    int superBlock[5] = {3, 4096, 0, iNodeBlockStart, diskHeadStart}; //TODO: not char*?
+    int superBlock[5] = {3, 4096, 0, iNodeBlockStart, iNodeBlockStart+16}; //TODO: not char*?
     writeBlock(disk, 0, superBlock);
     int i;
     int vectorArr[128];
@@ -178,7 +172,7 @@ short getNewInodeID(){
     //writes data
     int i;
     int blocksNeeded = ceil(strlen(inputData)/BLOCK_SIZE);
-    int currDiskHead = findDiskHead();
+    int currDiskHead = getDiskHead();
     char* pointToIndex;
     for(i=0; i<blocksNeeded; i++){
         writeBlock(disk, currDiskHead+i, &inputData[i*BLOCK_SIZE]);
