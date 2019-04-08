@@ -5,6 +5,9 @@ const int INODE_SIZE = 32;
 FILE* disk;
 char vectorArr[128];
 
+int iNodeBlockStart = 4;
+int diskHead = iNodeBlockStart+16; //start index of fileblocks
+
 /*
 Question:
 
@@ -31,55 +34,15 @@ first 10 blocks:
 1-free block vector
 2-inodeMap
 3-inodeMap
-4-DiskHead
-5-
-6-
-7-
-8-
-9-
+4-19-inodes
 
-methods needed:
-
-get data block size
--string.length / blockSize
-
-write flat file to memory
--call get data block size
--put string in memory
--append inode
--if block size>10, fix inode's single-indirect block
--append indirect block
-
-write directory file to memory ### different directory format? ###
--append inode with block addresses
- pointing to inodes for files/directories
- in this directory
-
-write memory to disk
--write non-Garbage blocks to disk
--append inode
--repeat
--append updated inode map
--mark old inode Map Garbage
--call memory init
-
-read from memory OR disk
--check memory inodeMap
--check disk inodeMap
--get inode from map
--get blocks from inode
--return data
-
-modify a file
--keep inodeID
-
-create a new file
--make new inodeID
-
-check if memory will overflow from upcoming write
--call write memory to disk
--init memory
--call write to memory
+super:
+0-3 - magic
+4-7 - max possible blocks
+8-11 - current # of inodes
+12-15 - block index of first inode block
+16-19 - current diskhead
+20-
 */
 
 typedef struct iNode{
@@ -117,8 +80,10 @@ void writeInode(FILE* disk, int nodeLocation, struct iNode* currNode){
     fseek(disk, nodeLocation+30, SEEK_SET);
     fwrite(&currNode->indir1, 2, 1, disk);
 
+    //gets the number of inodes on disk
+    //adds one and writes back
     int* numNode = malloc(4);
-    fseek(disk, 0+6, SEEK_SET);
+    fseek(disk, 0+4+4, SEEK_SET);
     fread(numNode, 4, 1, disk);
     fwrite(numNode+1, 4, 1, disk);
 }
@@ -135,19 +100,22 @@ FILE* InitLLFS(){
     /*FILE* */disk = fopen("vdisk", "wb"); // Open the file to be written to in binary mode
     char* init=calloc(BLOCK_SIZE*NUM_BLOCKS, 1);
     fwrite(init, BLOCK_SIZE*NUM_BLOCKS, 1, disk);
-
     fclose(disk);
+    initStartingBlocks();
     return disk;
  }
 
  void initStartingBlocks(){
-    int superBlock[3] = {3, 4096, 0}; //TODO: not char*?
+    int superBlock[5] = {3, 4096, 0, iNodeBlockStart, diskHead}; //TODO: not char*?
     writeBlock(disk, 0, superBlock);
     int i;
     int vectorArr[128];
     for(i=0; i<128; i++){
         vectorArr[i]=0xff;
     }
+    // fseek(disk, 0+4+4, SEEK_SET);
+    // fread(numNode, 4, 1, disk);
+    // fwrite(numNode+1, 4, 1, disk);
  }
 
  int isBitClear(int blocknum){
@@ -171,13 +139,13 @@ void clearbit(int blocknum){
     vectorArr[blocknum/8] = byte & mask;
 }
 
-void markVectorBlocks(int diskHead, int numBits, int isSetting){
+void markVectorBlocks(int currDiskHead, int numBits, int isSetting){
     int i;
     for(i=0; i<numBits; i++){
         if(isSetting){
-            setbit(diskHead+i);
+            setbit(currDiskHead+i);
         }else{
-            clearbit(diskHead+i);
+            clearbit(currDiskHead+i);
         }
     }
     //TODO: overwrite vector block with vectorArr[]
@@ -206,26 +174,25 @@ short getNewInodeID(){
     //writes data
     int i;
     int blocksNeeded = ceil(strlen(inputData)/BLOCK_SIZE);
-    int diskHead = findDiskHead();
+    int currDiskHead = findDiskHead();
     char* pointToIndex;
     for(i=0; i<blocksNeeded; i++){
-        writeBlock(disk, diskHead+i, &inputData[i*BLOCK_SIZE]);
+        writeBlock(disk, currDiskHead+i, &inputData[i*BLOCK_SIZE]);
     } //TODO: fix indirect blocking
+    addDiskHead(blocksNeeded);
 
     //writes inode
-    markVectorBlocks(diskHead, i+1, 0);
+    markVectorBlocks(currDiskHead, i+1, 0);
     short addyArr[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     for(i=0; i<blocksNeeded; i++){
-        addyArr[i]=diskHead+i;
+        addyArr[i]=currDiskHead+i;
     }
     struct iNode* currNode = makeInode(getNewInodeID(), strlen(inputData), isDir, addyArr, 0);
-    diskHead = findDiskHead();
-    writeInode(disk, diskHead, currNode);
-
+    int nodeSpot = iNodeBlockStart+(floor(getNumInodes()/16))+(32*getNumInodes()%16);
+    writeInode(disk, nodeSpot, currNode);
+    
     //writes inode to map
-    updateImap(disk, inodeMapBlock, totalInodes%127, currNode->inodeID, diskHead);
-
-
+    updateImap(disk, inodeMapBlock, totalInodes%127, currNode->inodeID, currDiskHead);
 
     //free(currNode); //TODO: fix this
  }
@@ -263,7 +230,11 @@ short getNewInodeID(){
  } //TODO: doesn't account for indirect yet.
 
  int findDiskHead(){
-     //TODO: checks and returns where the disk Head is.
+     return diskHead;
+ }
+
+ void addDiskHead(int blocksAdded){
+     diskHead += blocksAdded;
  }
 
 

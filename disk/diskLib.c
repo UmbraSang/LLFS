@@ -15,7 +15,7 @@ void readBlock(FILE* disk, int blockNum, void* buffer){
 }
 
 void getNumInodes(FILE* disk, int* numNodes){
-    fseek(disk, 0+6, SEEK_SET);
+    fseek(disk, 0+4+4, SEEK_SET); //offsets to third int in superblock
     fread(numNodes, 4, 1, disk);
 }
 
@@ -27,9 +27,9 @@ void readInode(FILE* disk, int blockNum, void* buffer, int size, int offset){
 void updateImap(FILE* disk, int mapBlock, int blockInodes, short inodeID, short inodeAddy){
     int location = mapBlock*BLOCK_SIZE+blockInodes*4;
     fseek(disk, location, SEEK_SET);
-    fwrite(&inodeID, 2, 1, disk);
+    fwrite(&inodeID, 2, 1, disk); //TODO: should this be derefrenced?
     fseek(disk, location+2, SEEK_SET);
-    fwrite(&inodeAddy, 2, 1, disk);
+    fwrite(&inodeAddy, 2, 1, disk); //TODO: should this be derefrenced?
 }
 
 void initDisk(){}

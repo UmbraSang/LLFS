@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
-int MAX = 2560;
+int MAX = 2560; //five block max
 
 void txtReader(char* input, char* buffer){
     FILE* txtFile = fopen(input, "r"); // read mode
