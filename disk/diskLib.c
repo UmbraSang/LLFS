@@ -15,8 +15,21 @@ void readBlock(FILE* disk, int blockNum, void* buffer){
 }
 
 void getNumInodes(FILE* disk, int* numNodes){
-    fseek(disk, 0+4+4, SEEK_SET); //offsets to third int in superblock
+    fseek(disk, 0+4+4, SEEK_SET); //offsets to current # inodes in superblock
     fread(numNodes, 4, 1, disk);
+}
+
+void getDiskHead(FILE* disk, int* blocksIndex){
+    fseek(disk, 16, SEEK_SET); //offsets to current diskhead in superblock
+    fread(blocksIndex, 4, 1, disk);
+}
+
+void addDiskHead(FILE* disk, int blocksAdded){
+    //Moves diskHead by blocksAdded
+    int* currHead = malloc(4);
+    fseek(disk, 16, SEEK_SET); //offsets to current diskhead in superblock
+    fread(currHead, 4, 1, disk);
+    fwrite(currHead+blocksAdded, 4, 1, disk);
 }
 
 void readInode(FILE* disk, int blockNum, void* buffer, int size, int offset){

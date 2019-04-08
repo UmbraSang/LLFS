@@ -92,10 +92,6 @@ int findDiskHead(){
      return diskHead;
  }
 
- void addDiskHead(int blocksAdded){
-     diskHead += blocksAdded;
- }
-
 void initStartingBlocks(){
     int superBlock[5] = {3, 4096, 0, iNodeBlockStart, diskHead}; //TODO: not char*?
     writeBlock(disk, 0, superBlock);
@@ -187,7 +183,7 @@ short getNewInodeID(){
     for(i=0; i<blocksNeeded; i++){
         writeBlock(disk, currDiskHead+i, &inputData[i*BLOCK_SIZE]);
     } //TODO: fix indirect blocking
-    addDiskHead(blocksNeeded);
+    addDiskHead(disk, blocksNeeded);
 
     //writes inode
     markVectorBlocks(currDiskHead, i+1, 0);
