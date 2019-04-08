@@ -34,6 +34,7 @@ void updateImap(FILE* disk, int mapBlock, int blockInodes, short inodeID, short 
 
 void initDisk(){}
 
+/*
 int main(int argc, char* argv[]) {
     FILE* disk = fopen("vdisk", "wb"); // Open the file to be written to in binary mode
     char* init=calloc(BLOCK_SIZE*NUM_BLOCKS, 1);
@@ -42,3 +43,4 @@ int main(int argc, char* argv[]) {
     fclose(disk);
     return 0;
 }
+*/

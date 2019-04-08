@@ -1,20 +1,19 @@
 #include "../io/File.c"
 #include <stdio.h>
 #include <stdlib.h>
+#include <stddef.h>
 int MAX = 2560;
 
-char* txtReader(char* input){
-    char* buffer[MAX];
+void txtReader(char* input, char* buffer){
     FILE* txtFile = fopen(input, "r"); // read mode
  
    if (txtFile == NULL) {
       perror("Error while opening the file.\n");
       exit(EXIT_FAILURE);
    }
-   fgets(buffer, MAX, txtFile) != EOF);
-   fclose(fp);
+   fgets(buffer, MAX, txtFile);
+   fclose(txtFile);
    buffer[strlen(buffer)]=Null;
-   return buffer;
 }
 
 int main(int argc, char **argv){
@@ -25,6 +24,7 @@ int main(int argc, char **argv){
     read from disk
     verify inode data
     */
-   char* inputData = txtReader(argv[1]); //TODO: review index
+   char* inputData[MAX];
+   txtReader(argv[1], inputData); //TODO: review index
    writeDataToDisk(disk, inputData, 0);
 }
