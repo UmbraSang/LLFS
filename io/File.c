@@ -6,7 +6,7 @@ FILE* disk;
 char vectorArr[128];
 
 const int iNodeBlockStart = 4;
-const int diskHead = iNodeBlockStart+16; //start index of fileblocks
+const int diskHeadStart = iNodeBlockStart+16; //start index of fileblocks
 
 /*
 Question:
@@ -93,7 +93,7 @@ int findDiskHead(){
  }
 
 void initStartingBlocks(){
-    int superBlock[5] = {3, 4096, 0, iNodeBlockStart, diskHead}; //TODO: not char*?
+    int superBlock[5] = {3, 4096, 0, iNodeBlockStart, diskHeadStart}; //TODO: not char*?
     writeBlock(disk, 0, superBlock);
     int i;
     int vectorArr[128];
