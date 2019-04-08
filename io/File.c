@@ -159,12 +159,12 @@ short getNewInodeID(){
  void writeDataToDisk(FILE* disk, char* inputData, int isDir){
     int* totalInodes = malloc(4);
     getNumInodes(disk, totalInodes);
-    printf("%d\n", &totalInodes); //TODO: remove
+    printf("%d\n", *totalInodes); //TODO: remove
     int inodeMapBlock;
-    if(totalInodes>256){
+    if(*totalInodes>256){
         printf("File System at capacity. No space in inodeMap.\n");
         return;
-    }else if(totalInodes>128){
+    }else if(*totalInodes>128){
         inodeMapBlock = 3;
     }else{
         inodeMapBlock = 2;
