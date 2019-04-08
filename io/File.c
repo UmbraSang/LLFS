@@ -172,7 +172,8 @@ short getNewInodeID(){
     //writes data
     int i;
     int blocksNeeded = ceil(strlen(inputData)/BLOCK_SIZE);
-    int currDiskHead = getDiskHead();
+    int currDiskHead;
+    getDiskHead(disk, &currDiskHead);
     char* pointToIndex;
     for(i=0; i<blocksNeeded; i++){
         writeBlock(disk, currDiskHead+i, &inputData[i*BLOCK_SIZE]);
