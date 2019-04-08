@@ -123,7 +123,7 @@ void writeInode(FILE* disk, int nodeLocation, struct iNode* currNode){
     fwrite(numNode+1, 4, 1, disk);
 }
 
-void InitLLFS(){
+FILE* InitLLFS(){
     if(access("vdisk", F_OK) != -1){
         if (remove("vdisk") == 0){
             printf("%s wiped clean.\n", "vdisk");
@@ -137,6 +137,7 @@ void InitLLFS(){
     fwrite(init, BLOCK_SIZE*NUM_BLOCKS, 1, disk);
 
     fclose(disk);
+    return disk;
  }
 
  void initStartingBlocks(){
