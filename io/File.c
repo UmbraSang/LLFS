@@ -193,7 +193,7 @@ short getNewInodeID(){
     writeInode(disk, nodeSpot, currNode);
     
     //writes inode to map
-    updateImap(disk, inodeMapBlock, totalInodes%127, currNode->inodeID, currDiskHead);
+    updateImap(disk, inodeMapBlock, *totalInodes%127, currNode->inodeID, currDiskHead);
 
     //free(currNode); //TODO: fix this
  }
