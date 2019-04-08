@@ -13,7 +13,7 @@ void txtReader(char* input, char* buffer){
    }
    fgets(buffer, MAX, txtFile);
    fclose(txtFile);
-   buffer[strlen(buffer)]=NULL;
+   buffer[strlen(buffer)]='\0';
 }
 
 int main(int argc, char **argv){
