@@ -5,8 +5,8 @@ const int INODE_SIZE = 32;
 FILE* disk;
 char vectorArr[128];
 
-int iNodeBlockStart = 4;
-int diskHead = iNodeBlockStart+16; //start index of fileblocks
+const int iNodeBlockStart = 4;
+const int diskHead = iNodeBlockStart+16; //start index of fileblocks
 
 /*
 Question:
@@ -88,6 +88,27 @@ void writeInode(FILE* disk, int nodeLocation, struct iNode* currNode){
     fwrite(numNode+1, 4, 1, disk);
 }
 
+int findDiskHead(){
+     return diskHead;
+ }
+
+ void addDiskHead(int blocksAdded){
+     diskHead += blocksAdded;
+ }
+
+void initStartingBlocks(){
+    int superBlock[5] = {3, 4096, 0, iNodeBlockStart, diskHead}; //TODO: not char*?
+    writeBlock(disk, 0, superBlock);
+    int i;
+    int vectorArr[128];
+    for(i=0; i<128; i++){
+        vectorArr[i]=0xff;
+    }
+    // fseek(disk, 0+4+4, SEEK_SET);
+    // fread(numNode, 4, 1, disk);
+    // fwrite(numNode+1, 4, 1, disk);
+ }
+
 FILE* InitLLFS(){
     if(access("vdisk", F_OK) != -1){
         if (remove("vdisk") == 0){
@@ -103,19 +124,6 @@ FILE* InitLLFS(){
     fclose(disk);
     initStartingBlocks();
     return disk;
- }
-
- void initStartingBlocks(){
-    int superBlock[5] = {3, 4096, 0, iNodeBlockStart, diskHead}; //TODO: not char*?
-    writeBlock(disk, 0, superBlock);
-    int i;
-    int vectorArr[128];
-    for(i=0; i<128; i++){
-        vectorArr[i]=0xff;
-    }
-    // fseek(disk, 0+4+4, SEEK_SET);
-    // fread(numNode, 4, 1, disk);
-    // fwrite(numNode+1, 4, 1, disk);
  }
 
  int isBitClear(int blocknum){
@@ -188,7 +196,8 @@ short getNewInodeID(){
         addyArr[i]=currDiskHead+i;
     }
     struct iNode* currNode = makeInode(getNewInodeID(), strlen(inputData), isDir, addyArr, 0);
-    int nodeSpot = iNodeBlockStart+(floor(getNumInodes()/16))+(32*getNumInodes()%16);
+
+    int nodeSpot = iNodeBlockStart+(floor(currNode->inodeID/16))+(32*currNode->inodeID%16);
     writeInode(disk, nodeSpot, currNode);
     
     //writes inode to map
@@ -228,14 +237,6 @@ short getNewInodeID(){
      }
      return buffer;
  } //TODO: doesn't account for indirect yet.
-
- int findDiskHead(){
-     return diskHead;
- }
-
- void addDiskHead(int blocksAdded){
-     diskHead += blocksAdded;
- }
 
 
 
