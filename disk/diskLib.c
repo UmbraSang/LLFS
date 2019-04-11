@@ -30,8 +30,9 @@ void addDiskHead(FILE* disk, int blocksAdded){
     printf("post addDiskHead() malloc\n");
     fseek(disk, 16, SEEK_SET); //offsets to current diskhead in superblock
     fread(currHead, 4, 1, disk);
+    *currHead+=blocksAdded;
     fseek(disk, 16, SEEK_SET); //offsets to current diskhead in superblock
-    fwrite(currHead[0]+blocksAdded, 4, 1, disk);
+    fwrite(currHead, 4, 1, disk);
 }
 
 void readInode(FILE* disk, int blockNum, void* buffer, int size, int offset){
