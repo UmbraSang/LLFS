@@ -140,11 +140,16 @@ void clearbit(int blocknum){
 void markVectorBlocks(int currDiskHead, int numBits, int isSetting){
     int i;
     for(i=0; i<numBits; i++){
+        printf("are we setting? = %d\n", isSetting);
         if(isSetting){
             setbit(currDiskHead+i);
+            printf("post set\n");
         }else{
             clearbit(currDiskHead+i);
+            printf("post clear\n");
         }
+        writeBlock(disk, 1, vectorArr);
+        printf("post write vector\n");
     }
     //TODO: overwrite vector block with vectorArr[]
 }
@@ -176,16 +181,13 @@ short getNewInodeID(){
     printf("ceil = %d\n", blocksNeeded);
     int currDiskHead;
     getDiskHead(disk, &currDiskHead);
-    printf("post getDiskHead()\n");
     char* pointToIndex;
     for(i=0; i<blocksNeeded; i++){
         printf("pre writeblock #%d\n", i);
         writeBlock(disk, currDiskHead+i, &inputData[i*BLOCK_SIZE]);
         printf("post writeblock #%d\n", i);
     } //TODO: fix indirect blocking
-    printf("pre addDiskHead()\n");
     addDiskHead(disk, blocksNeeded);
-    printf("post addDiskHead()\n");
 
     //writes inode
     printf("pre markVectorBlocks()\n");
