@@ -179,6 +179,7 @@ short getNewInodeID(){
     printf("post getDiskHead()\n");
     char* pointToIndex;
     for(i=0; i<blocksNeeded; i++){
+        printf("pre writeblock #%d", i);
         writeBlock(disk, currDiskHead+i, &inputData[i*BLOCK_SIZE]);
     } //TODO: fix indirect blocking
     printf("pre addDiskHead()");
