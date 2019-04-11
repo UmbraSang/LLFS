@@ -29,7 +29,9 @@ void addDiskHead(FILE* disk, int blocksAdded){
     int* currHead = malloc(4);
     fseek(disk, 16, SEEK_SET); //offsets to current diskhead in superblock
     fread(currHead, 4, 1, disk);
+    fseek(disk, 16, SEEK_SET); //offsets to current diskhead in superblock
     fwrite(currHead+blocksAdded, 4, 1, disk);
+    free(currHead);
 }
 
 void readInode(FILE* disk, int blockNum, void* buffer, int size, int offset){
