@@ -5,7 +5,7 @@
 int MAX = 2560; //five block max
 
 void txtReader(char* input, char* buffer){
-    FILE* txtFile = fopen(input, "rb"); // read mode
+    FILE* txtFile = fopen(input, "rb"); // read mode TODO: just r?
  
    if (txtFile == NULL) {
       perror("Error while opening the file.\n");
@@ -25,9 +25,11 @@ int main(int argc, char **argv){
     read from disk
     verify inode data
     */
-   char inputData[MAX];
-   txtReader("C:\\Users\\Pando\\Desktop\\SchoolWork\\CSC360-FileSystemProject\\disk\vdisk", inputData); //TODO: review index
-   printf("txtReader finished\n");
+   //char inputData[MAX];
+   //txtReader(, inputData); //TODO: review index
+   //"C:\\Users\\Pando\\Desktop\\SchoolWork\\CSC360-FileSystemProject\\disk\vdisk"
+   //printf("txtReader finished\n");
+   inputData = "hello world\n";
    writeDataToDisk(disk, inputData, 0);
    printf("DataToDisk finished\n");
 }
