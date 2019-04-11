@@ -173,13 +173,16 @@ short getNewInodeID(){
     //writes data
     int i;
     int blocksNeeded = ceil(strlen(inputData)/BLOCK_SIZE);
+    printf("ceil = %d\n", blocksNeeded);
     int currDiskHead;
     getDiskHead(disk, &currDiskHead);
+    printf("post getDiskHead()\n");
     char* pointToIndex;
     for(i=0; i<blocksNeeded; i++){
         writeBlock(disk, currDiskHead+i, &inputData[i*BLOCK_SIZE]);
     } //TODO: fix indirect blocking
     addDiskHead(disk, blocksNeeded);
+    printf("post addDiskHead()");
 
     //writes inode
     markVectorBlocks(currDiskHead, i+1, 0);
