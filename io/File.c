@@ -108,6 +108,7 @@ void clearbit(int blocknum){
 }
 
 void markVectorBlocks(int currDiskHead, int numBits, int isSetting){
+    printf("currDiskHead = %d, numBits = %d, isSetting = %d\n", currDiskHead, numBits, isSetting);
     int i;
     for(i=0; i<numBits; i++){
         printf("are we setting? = %d\n", isSetting);
@@ -118,9 +119,9 @@ void markVectorBlocks(int currDiskHead, int numBits, int isSetting){
             clearbit(currDiskHead+i);
             printf("post clear\n");
         }
-        writeBlock(disk, 1, vectorArr);
-        printf("post write vector\n");
     }
+    writeBlock(disk, 1, vectorArr);
+    printf("post write vector\n");
     //TODO: overwrite vector block with vectorArr[]
 }
 
