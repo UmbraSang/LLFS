@@ -26,7 +26,7 @@ int main(int argc, char **argv){
     verify inode data
     */
    char inputData[MAX];
-   txtReader(argv[1], inputData); //TODO: review index
+   txtReader("C:\\Users\\Pando\\Desktop\\SchoolWork\\CSC360-FileSystemProject\\disk\vdisk", inputData); //TODO: review index
    printf("txtReader finished\n");
    writeDataToDisk(disk, inputData, 0);
    printf("DataToDisk finished\n");
