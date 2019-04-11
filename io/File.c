@@ -172,7 +172,7 @@ short getNewInodeID(){
 
     //writes data
     int i;
-    int blocksNeeded = ceil(strlen(inputData)/BLOCK_SIZE);
+    int blocksNeeded = ceil(strlen(inputData)/BLOCK_SIZE)+1;
     printf("ceil = %d\n", blocksNeeded);
     int currDiskHead;
     getDiskHead(disk, &currDiskHead);
@@ -181,6 +181,7 @@ short getNewInodeID(){
     for(i=0; i<blocksNeeded; i++){
         writeBlock(disk, currDiskHead+i, &inputData[i*BLOCK_SIZE]);
     } //TODO: fix indirect blocking
+    printf("pre addDiskHead()");
     addDiskHead(disk, blocksNeeded);
     printf("post addDiskHead()");
 
