@@ -86,37 +86,6 @@ void writeInode(FILE* disk, int nodeLocation, struct iNode* currNode){
     fwrite(numNode+1, 4, 1, disk);
 }
 
-void initStartingBlocks(){
-    int superBlock[5] = {3, 4096, 0, iNodeBlockStart, iNodeBlockStart+16}; //TODO: not char*?
-    writeBlock(disk, 0, superBlock);
-    int i;
-    int vectorArr[128];
-    for(i=0; i<128; i++){
-        vectorArr[i]=0xff;
-    }
-    markVectorBlocks(0, 20, 0);
-    // fseek(disk, 0+4+4, SEEK_SET);
-    // fread(numNode, 4, 1, disk);
-    // fwrite(numNode+1, 4, 1, disk);
- }
-
-FILE* InitLLFS(){
-    if(access("vdisk", F_OK) != -1){
-        if (remove("vdisk") == 0){
-            printf("%s wiped clean.\n", "vdisk");
-        }else{
-            printf("Unable to format disk\n");
-            perror("InitLLFS failed to wipe disk.\n");
-        }
-    }
-    /*FILE* */disk = fopen("vdisk", "wb"); // Open the file to be written to in binary mode
-    char* init=calloc(BLOCK_SIZE*NUM_BLOCKS, 1);
-    fwrite(init, BLOCK_SIZE*NUM_BLOCKS, 1, disk);
-    fclose(disk);
-    initStartingBlocks();
-    return disk;
- }
-
  int isBitClear(int blocknum){
     char byte = vectorArr[blocknum/8];
     int mask = 1;
@@ -154,6 +123,37 @@ void markVectorBlocks(int currDiskHead, int numBits, int isSetting){
     }
     //TODO: overwrite vector block with vectorArr[]
 }
+
+void initStartingBlocks(){
+    int superBlock[5] = {3, 4096, 0, iNodeBlockStart, iNodeBlockStart+16}; //TODO: not char*?
+    writeBlock(disk, 0, superBlock);
+    int i;
+    int vectorArr[128];
+    for(i=0; i<128; i++){
+        vectorArr[i]=0xff;
+    }
+    markVectorBlocks(0, 20, 0);
+    // fseek(disk, 0+4+4, SEEK_SET);
+    // fread(numNode, 4, 1, disk);
+    // fwrite(numNode+1, 4, 1, disk);
+ }
+
+FILE* InitLLFS(){
+    if(access("vdisk", F_OK) != -1){
+        if (remove("vdisk") == 0){
+            printf("%s wiped clean.\n", "vdisk");
+        }else{
+            printf("Unable to format disk\n");
+            perror("InitLLFS failed to wipe disk.\n");
+        }
+    }
+    /*FILE* */disk = fopen("vdisk", "wb"); // Open the file to be written to in binary mode
+    char* init=calloc(BLOCK_SIZE*NUM_BLOCKS, 1);
+    fwrite(init, BLOCK_SIZE*NUM_BLOCKS, 1, disk);
+    fclose(disk);
+    initStartingBlocks();
+    return disk;
+ }
 
 short getNewInodeID(){
      int* inodeID = malloc(4);
