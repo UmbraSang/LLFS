@@ -183,12 +183,14 @@ short getNewInodeID(){
         writeBlock(disk, currDiskHead+i, &inputData[i*BLOCK_SIZE]);
         printf("post writeblock #%d\n", i);
     } //TODO: fix indirect blocking
-    printf("pre addDiskHead()");
+    printf("pre addDiskHead()\n");
     addDiskHead(disk, blocksNeeded);
-    printf("post addDiskHead()");
+    printf("post addDiskHead()\n");
 
     //writes inode
+    printf("pre markVectorBlocks()\n");
     markVectorBlocks(currDiskHead, i+1, 0);
+    printf("post markVectorBlocks()\n");
     short addyArr[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     for(i=0; i<blocksNeeded; i++){
         addyArr[i]=currDiskHead+i;
