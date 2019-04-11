@@ -5,7 +5,7 @@
 int MAX = 2560; //five block max
 
 void txtReader(char* input, char* buffer){
-    FILE* txtFile = fopen(input, "r"); // read mode
+    FILE* txtFile = fopen(input, "rb"); // read mode
  
    if (txtFile == NULL) {
       perror("Error while opening the file.\n");
