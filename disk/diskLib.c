@@ -30,7 +30,7 @@ void addDiskHead(FILE* disk, int blocksAdded){
     printf("post addDiskHead() malloc\n");
     fseek(disk, 16, SEEK_SET); //offsets to current diskhead in superblock
     fread(currHead, 4, 1, disk);
-    currHead[0] = currHead[0] + blocksAdded;
+    *currHead = *currHead + blocksAdded;
     fseek(disk, 16, SEEK_SET); //offsets to current diskhead in superblock
     fwrite(currHead, 4, 1, disk);
 }
