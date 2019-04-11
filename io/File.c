@@ -94,6 +94,7 @@ void initStartingBlocks(){
     for(i=0; i<128; i++){
         vectorArr[i]=0xff;
     }
+    markVectorBlocks(0, 20, 0);
     // fseek(disk, 0+4+4, SEEK_SET);
     // fread(numNode, 4, 1, disk);
     // fwrite(numNode+1, 4, 1, disk);
