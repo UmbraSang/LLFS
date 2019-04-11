@@ -157,11 +157,9 @@ short getNewInodeID(){
  }
 
  void writeDataToDisk(FILE* disk, char* inputData, int isDir){ //TODO: seg faults in here
-    printf("1\n");
     int* totalInodes = malloc(4);
-    printf("2\n");
     getNumInodes(disk, totalInodes);
-    printf("%d\n", *totalInodes); //TODO: remove
+    printf("current inodes = %d\n", *totalInodes); //TODO: remove
     int inodeMapBlock;
     if(*totalInodes>256){
         printf("File System at capacity. No space in inodeMap.\n");
