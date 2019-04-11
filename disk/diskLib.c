@@ -31,7 +31,7 @@ void addDiskHead(FILE* disk, int blocksAdded){
     fseek(disk, 16, SEEK_SET); //offsets to current diskhead in superblock
     fread(currHead, 4, 1, disk);
     int newHead = currHead[0] + blocksAdded;
-    *currHead = newHead;
+    currHead = &newHead;
     fseek(disk, 16, SEEK_SET); //offsets to current diskhead in superblock
     fwrite(currHead, 4, 1, disk);
 }
