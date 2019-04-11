@@ -29,7 +29,7 @@ int main(int argc, char **argv){
    //txtReader(, inputData); //TODO: review index
    //"C:\\Users\\Pando\\Desktop\\SchoolWork\\CSC360-FileSystemProject\\disk\vdisk"
    //printf("txtReader finished\n");
-   inputData = "hello world\n";
+   char* inputData = "hello world\n";
    writeDataToDisk(disk, inputData, 0);
    printf("DataToDisk finished\n");
 }
