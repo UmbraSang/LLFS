@@ -26,7 +26,7 @@ void getDiskHead(FILE* disk, int* blocksIndex){
 
 void addDiskHead(FILE* disk, int blocksAdded){
     //Moves diskHead by blocksAdded
-    int* currHead = malloc(512);
+    int* currHead = malloc(4);
     printf("post addDiskHead() malloc\n");
     fseek(disk, 16, SEEK_SET); //offsets to current diskhead in superblock
     fread(currHead, 4, 1, disk);
