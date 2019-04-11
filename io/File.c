@@ -193,7 +193,7 @@ short getNewInodeID(){
 
     //writes inode
     printf("pre markVectorBlocks()\n");
-    markVectorBlocks(currDiskHead, i+1, 0);
+    markVectorBlocks(currDiskHead, i, 0);
     printf("post markVectorBlocks()\n");
     short addyArr[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     for(i=0; i<blocksNeeded; i++){
