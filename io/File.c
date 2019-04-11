@@ -126,7 +126,7 @@ void markVectorBlocks(int currDiskHead, int numBits, int isSetting){
 }
 
 void initStartingBlocks(){
-    int superBlock[5] = {3, 4096, 0, iNodeBlockStart, iNodeBlockStart+16}; //TODO: not char*?
+    int superBlock[5] = {3, 4096, 0, 4, 4+16}; //TODO: not char*?
     writeBlock(disk, 0, superBlock);
     int i;
     int vectorArr[128];
