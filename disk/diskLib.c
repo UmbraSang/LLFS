@@ -15,7 +15,7 @@ void readBlock(FILE* disk, int blockNum, void* buffer){
 }
 
 void getNumInodes(FILE* disk, int* numNodes){
-    fseek(disk, 0+4+4, SEEK_SET); //offsets to current # inodes in superblock
+    fseek(disk, 8, SEEK_SET); //offsets to current # inodes in superblock
     fread(numNodes, 4, 1, disk);
 }
 
@@ -27,12 +27,12 @@ void getDiskHead(FILE* disk, int* blocksIndex){
 void addDiskHead(FILE* disk, int blocksAdded){
     //Moves diskHead by blocksAdded
     int* currHead = malloc(512);
-    printf("post addDiskHead() malloc\n");
+    //printf("post addDiskHead() malloc\n");
     fseek(disk, 16, SEEK_SET); //offsets to current diskhead in superblock
     fread(currHead, 4, 1, disk);
-    printf("value %d is in address %d\n", *currHead, currHead);
+    //printf("value %d is in address %d\n", *currHead, currHead);
     int newHead = *currHead + blocksAdded;
-    printf("newHead = %d, currHead = %d, blocksAdded = %d\n", newHead, *currHead, blocksAdded);
+    //printf("newHead = %d, currHead = %d, blocksAdded = %d\n", newHead, *currHead, blocksAdded);
     currHead = &newHead;
     fseek(disk, 16, SEEK_SET); //offsets to current diskhead in superblock
     fwrite(currHead, 4, 1, disk);

@@ -18,7 +18,7 @@ void txtReader(char* input, char* buffer){
 
 int main(int argc, char **argv){
     FILE* disk = InitLLFS();
-    printf("init finished\n");
+    //printf("init finished\n");
     /*
     Free block checking after writing
     write to disk
@@ -31,5 +31,5 @@ int main(int argc, char **argv){
    //printf("txtReader finished\n");
    char* inputData = "hello world\n";
    writeDataToDisk(disk, inputData, 0);
-   printf("DataToDisk finished\n");
+   //printf("DataToDisk finished\n");
 }

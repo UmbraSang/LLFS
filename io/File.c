@@ -108,25 +108,25 @@ void clearbit(int blocknum){
 }
 
 void markVectorBlocks(int currDiskHead, int numBits, int isSetting){
-    printf("currDiskHead = %d, numBits = %d, isSetting = %d\n", currDiskHead, numBits, isSetting);
+    //printf("currDiskHead = %d, numBits = %d, isSetting = %d\n", currDiskHead, numBits, isSetting);
     int i;
     for(i=0; i<numBits; i++){
-        printf("are we setting? = %d\n", isSetting);
+        //printf("are we setting? = %d\n", isSetting);
         if(isSetting){
             setbit(currDiskHead+i);
-            printf("post set\n");
+            //printf("post set\n");
         }else{
             clearbit(currDiskHead+i);
-            printf("post clear\n");
+            //printf("post clear\n");
         }
     }
     writeBlock(disk, 1, vectorArr);
-    printf("post write vector\n");
+    //printf("post write vector\n");
     //TODO: overwrite vector block with vectorArr[]
 }
 
 void initStartingBlocks(){
-    int superBlock[5] = {3, 4096, 0, 4, 4+16}; //TODO: not char*?
+    int superBlock[5] = {3, 4096, 0, iNodeBlockStart, iNodeBlockStart+16}; //TODO: not char*?
     writeBlock(disk, 0, superBlock);
     int i;
     int vectorArr[128];
@@ -166,7 +166,7 @@ short getNewInodeID(){
  void writeDataToDisk(FILE* disk, char* inputData, int isDir){ //TODO: seg faults in here
     int* totalInodes = malloc(4);
     getNumInodes(disk, totalInodes);
-    printf("current inodes = %d\n", *totalInodes); //TODO: remove
+    //printf("current inodes = %d\n", *totalInodes); //TODO: remove
     int inodeMapBlock;
     if(*totalInodes>256){
         printf("File System at capacity. No space in inodeMap.\n");
@@ -180,21 +180,21 @@ short getNewInodeID(){
     //writes data
     int i;
     int blocksNeeded = ceil(strlen(inputData)/BLOCK_SIZE)+1;
-    printf("ceil = %d\n", blocksNeeded);
+    //printf("ceil = %d\n", blocksNeeded);
     int currDiskHead;
     getDiskHead(disk, &currDiskHead);
     char* pointToIndex;
     for(i=0; i<blocksNeeded; i++){
-        printf("pre writeblock #%d\n", i);
+        //printf("pre writeblock #%d\n", i);
         writeBlock(disk, currDiskHead+i, &inputData[i*BLOCK_SIZE]);
-        printf("post writeblock #%d\n", i);
+        //printf("post writeblock #%d\n", i);
     } //TODO: fix indirect blocking
     addDiskHead(disk, blocksNeeded);
 
     //writes inode
-    printf("pre markVectorBlocks()\n");
+    //printf("pre markVectorBlocks()\n");
     markVectorBlocks(currDiskHead, i, 0);
-    printf("post markVectorBlocks()\n");
+    //printf("post markVectorBlocks()\n");
     short addyArr[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     for(i=0; i<blocksNeeded; i++){
         addyArr[i]=currDiskHead+i;
